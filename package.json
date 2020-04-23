@@ -1,0 +1,29 @@
+{
+  "name": "multiplayer-in-js",
+  "version": "1.0.0",
+  "description": "\"# multiplayer-in-js\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prodes13/multiplayer-in-js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prodes13/multiplayer-in-js/issues"
+  },
+  "homepage": "https://github.com/prodes13/multiplayer-in-js#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  }
+}

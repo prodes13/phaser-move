@@ -99,7 +99,8 @@ server.on('error', (err) => {
 });
 
 // server listening for the port 8080
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+
 server.listen(PORT, () => {
     console.log("Starting the game on http://localhost:5000 !");
     

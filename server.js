@@ -61,6 +61,15 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('playerMoved', players[socket.id]);
     });
 
+    
+    socket.on('disconnect', () => {
+        console.log('A user disconnected!');
+        // remove this player from our players object
+        delete players[socket.id];
+        // emit a message to all players to remove this player
+        io.emit('disconnect', socket.id);
+    });
+    
     socket.on('starCollected', function () {
         if (players[socket.id].team === 'red') {
           scores.red += 10;
@@ -72,14 +81,6 @@ io.on('connection', (socket) => {
         io.emit('starLocation', star);
         io.emit('scoreUpdate', scores);
       });
-
-    socket.on('disconnect', () => {
-        console.log('A user disconnected!');
-        // remove this player from our players object
-        delete players[socket.id];
-        // emit a message to all players to remove this player
-        io.emit('disconnect', socket.id);
-    });
 });
 
 

@@ -6,8 +6,6 @@ const path = require('path');
 // importing socket.io for multiplayer
 const socketio = require('socket.io');
 
-const RpsGame = require('./rps-game');
-
 const app = express();
 
 // create io server
@@ -24,23 +22,39 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // checking waiting players
-let waitingPlayer = null;
+let players = {};
 
-io.on('connection', (sock) => {
-    if(waitingPlayer) {
-        // start the game
-        // sock.emit('message', 'Game Starts!');
-        // waitingPlayer('message', 'Game Starts!');
-        // [sock, waitingPlayer].forEach(s => s.emit('message', 'Game Starts!'));
-        new RpsGame(waitingPlayer, sock);
-        waitingPlayer = null;
-    } else {
-        // the waiting player is the new connected socket!!!
-        waitingPlayer = sock;
-        waitingPlayer.emit('message', 'Waiting for an opponent!');
-    }
-    sock.on('message', (text) => {
-        io.emit('message', text)
+io.on('connection', (socket) => {
+    console.log('A user connected!');
+    
+    // create a new player and add it to our players object
+    players[socket.id] = {
+        rotation: 0,
+        x: Math.floor(Math.random() * 700) + 50,
+        y: Math.floor(Math.random() * 500) + 50,
+        playerId: socket.id,
+        team: (Math.floor(Math.random() * 2) == 0) ? 'red' : 'blue'
+    };
+    // send the players object to the new player
+    socket.emit('currentPlayers', players);
+    // update all other players of the new player
+    socket.broadcast.emit('newPlayer', players[socket.id]);
+
+    // when a player moves, update the player data
+    socket.on('playerMovement', function (movementData) {
+        players[socket.id].x = movementData.x;
+        players[socket.id].y = movementData.y;
+        players[socket.id].rotation = movementData.rotation;
+        // emit a message to all players about the player that moved
+        socket.broadcast.emit('playerMoved', players[socket.id]);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('A user disconnected!');
+        // remove this player from our players object
+        delete players[socket.id];
+        // emit a message to all players to remove this player
+        io.emit('disconnect', socket.id);
     })
 });
 
@@ -61,8 +75,8 @@ server.on('error', (err) => {
 });
 
 // server listening for the port 8080
-const PORT = 8080;
+const PORT = 5000;
 server.listen(PORT, () => {
-    console.log("Starting the game on http://localhost:8080 !");
+    console.log("Starting the game on http://localhost:5000 !");
     
 });

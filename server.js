@@ -19,7 +19,7 @@ app.use(express.static(clientPath));
 
 const server = http.createServer(app);
 
-const io = socketio(server, { wsEngine: 'ws' });
+const io = socketio(server);
 
 // checking waiting players
 let players = {};
